@@ -3,6 +3,27 @@ const math = require("mathjs");
 
 const l = console.log;
 
+const K = 4,
+  max_iters = 20;
+
+function kMeansInitCentroids(X, K) {
+  const centroids = math.zeros(K, 3);
+  for (let i = 1; i <= K; i++) {
+    let dimensionsX = math.size(X)._data;
+    let randomIndex = getRandomInt(1, dimensionsX[0]);
+    let randomCentroid = math.evaluate(`X[randomIndex,:]`, {
+      X,
+      randomIndex
+    });
+    math.evaluate(`centroids[i, :] = randomCentroid`, {
+      centroids,
+      randomCentroid,
+      i
+    });
+  }
+  return centroids;
+}
+
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -27,11 +48,7 @@ function getPixelColors(image) {
 Jimp.read("insta.png")
   .then(image => {
     let X = getPixelColors(image);
-    let count = 0;
-    X.forEach(function(value, index, matrix) {
-      if (count <= 20) console.log("value:", value, "index:", index);
-      count++;
-    });
+    l(kMeansInitCentroids(X, K));
   })
   .catch(err => {
     l(err);
