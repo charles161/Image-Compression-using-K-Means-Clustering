@@ -3,28 +3,20 @@ const math = require("mathjs");
 
 const l = console.log;
 
-const K = 4,
-  max_iters = 20;
-
-function initCentroids(X, K) {
-  const centroids = math.zeros(K, 3);
-  for (let i = 1; i <= K; i++) {
-    let dimensionsX = math.size(X)._data;
-    let randomIndex = getRandomInt(1, dimensionsX[0]);
-    let randomCentroid = math.evaluate(`X[randomIndex,:]`, {
-      X,
-      randomIndex
-    });
-    math.evaluate(`centroids[i, :] = randomCentroid`, {
-      centroids,
-      randomCentroid,
-      i
-    });
-  }
-  return centroids;
-}
+const K = 10,
+  max_iters = 10;
 
 const filterByIndex = index => val => val == index;
+
+function mapPixelsToCentroids(X, centroids, idx) {
+  let XData = X._data;
+  let centroidsData = centroids._data;
+  let idxData = idx._data;
+  for (let index = 0; index < idxData.length; index++) {
+    XData[index] = centroidsData[idxData[index] - 1];
+  }
+  return XData;
+}
 
 function addRows(row, matrix, index) {
   for (let i = 0; i < row.length; i++) {
@@ -61,14 +53,11 @@ function getColumnIndex(values, realMatrix) {
   return indexes;
 }
 
-function runKMeans(X, initial_centroids, max_iters, plot_progress) {}
-
 function findClosestCentroids(X, centroids, K) {
   let m = math.size(X)._data[0];
   let idx = math.zeros(m, 1);
   let values = math.zeros(m, 1);
   let ansMatrix = math.zeros(m, K);
-
   for (let i = 1; i <= K; i++) {
     let rowCentroid = math.evaluate(`centroids[i,:]`, {
       centroids,
@@ -77,7 +66,6 @@ function findClosestCentroids(X, centroids, K) {
     let mat1 = math.transpose(rowCentroid);
     let mat2 = math.ones(1, m);
     let duplicateCentroid = math.transpose(math.multiply(mat1, mat2));
-    // ansMatrix(:,i) = sum((X.-centroids(i,:)).^2,2);
     math.evaluate(`ansMatrix[:,i] = sum((X-duplicateCentroid).^2,2);`, {
       ansMatrix,
       i,
@@ -85,19 +73,43 @@ function findClosestCentroids(X, centroids, K) {
       duplicateCentroid
     });
   }
-
   values = math.evaluate(`min(ansMatrix,2)`, {
     ansMatrix
   });
-
   idx = math.matrix(getColumnIndex(values._data, ansMatrix._data));
   return idx;
 }
 
-function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+function runkMeans(X, initial_centroids, max_iters, K) {
+  let m = math.size(X)._data[0];
+  let idx = math.zeros(m, 1);
+  let centroids = math.zeros(K, 3);
+  let previous_centroids = math.zeros(K, 3);
+  centroids = initial_centroids;
+  previous_centroids = initial_centroids;
+  for (let iteration = 0; iteration < max_iters; iteration++) {
+    idx = findClosestCentroids(X, centroids, K);
+    centroids = computeCentroids(X, idx, K);
+  }
+  return [centroids, idx];
+}
+
+function initCentroids(X, K) {
+  const centroids = math.zeros(K, 3);
+  for (let i = 1; i <= K; i++) {
+    let dimensionsX = math.size(X)._data;
+    let randomIndex = getRandomInt(1, dimensionsX[0]);
+    let randomCentroid = math.evaluate(`X[randomIndex,:]`, {
+      X,
+      randomIndex
+    });
+    math.evaluate(`centroids[i, :] = randomCentroid`, {
+      centroids,
+      randomCentroid,
+      i
+    });
+  }
+  return centroids;
 }
 
 function getPixelColors(image) {
@@ -115,20 +127,20 @@ function getPixelColors(image) {
   return math.matrix(ans);
 }
 
+function getRandomInt(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+}
+
 Jimp.read("insta.png")
   .then(image => {
     let X = getPixelColors(image);
-    let centroids = initCentroids(X, K);
-    l("old centroids", centroids._data);
-    let idx = findClosestCentroids(X, centroids, K);
-    l("new centroids", computeCentroids(X, idx, K)._data);
-
-    // let mat1 = math.matrix([[1, 2, 3], [5, 6, 7]]);
-    // l(
-    //   math.evaluate(`max(mat1,1)`, {
-    //     mat1
-    //   })
-    // );
+    let initial_centroids = initCentroids(X, K);
+    let [centroids, idx] = runkMeans(X, initial_centroids, max_iters, K);
+    idx = findClosestCentroids(X, centroids, K);
+    newX = mapPixelsToCentroids(X, centroids, idx);
+    l(newX);
   })
   .catch(err => {
     l(err);
