@@ -3,10 +3,24 @@ const math = require("mathjs");
 
 const l = console.log;
 
-const K = 10,
+const K = 5,
   max_iters = 10;
 
 const filterByIndex = index => val => val == index;
+
+function createCompressedImage(X, image, path) {
+  let width = image.bitmap.width;
+  let height = image.bitmap.height;
+  let count = 0;
+  for (let i = 0; i < width; i++)
+    for (let j = 0; j < height; j++) {
+      let rgbObj = Jimp.intToRGBA(image.getPixelColor(i, j));
+      const hex = Jimp.rgbaToInt(X[count][0] * 255, X[count][1] * 255, X[count][2] * 255, rgbObj.a);
+      image.setPixelColor(hex, i, j);
+      count++;
+    }
+  image.write(path);
+}
 
 function mapPixelsToCentroids(X, centroids, idx) {
   let XData = X._data;
@@ -133,14 +147,14 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
 }
 
-Jimp.read("insta.png")
+Jimp.read("new_insta.png")
   .then(image => {
     let X = getPixelColors(image);
     let initial_centroids = initCentroids(X, K);
     let [centroids, idx] = runkMeans(X, initial_centroids, max_iters, K);
     idx = findClosestCentroids(X, centroids, K);
     newX = mapPixelsToCentroids(X, centroids, idx);
-    l(newX);
+    createCompressedImage(newX, image, "compressedInsta.png");
   })
   .catch(err => {
     l(err);
