@@ -14,7 +14,7 @@ This project helps you to understand **k-means clustering algorithm** (an unsupe
 3. **imagePath** - Path of the Image to be Compressed. Defaults to **./insta.png**.
 4. **comImagePath** - Path of the compressed image to be saved. Defaults to **./compressed_insta.png**.
 
-## Running the Node JS Script
+## Running the Node JS Script (Standalone)
 
 ```sh
 git clone https://github.com/charles161/Image-Compression-using-K-Means-Clustering.git k-means
@@ -23,6 +23,6 @@ npm i
 node index.js --K=5 --max_iter=10 --imagePath=./insta.png --comImagePath=./compressed_insta.png
 ```
 
-## Running the React JS Application
+## Running the React JS Application (Standalone)
 
 **In Development**
