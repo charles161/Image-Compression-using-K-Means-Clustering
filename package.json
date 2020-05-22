@@ -1,16 +1,16 @@
 {
-  "name": "imageCompression",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "jimp": "^0.12.1",
-    "mathjs": "^7.0.0"
-  }
+    "name": "image_compression",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "jimp": "^0.12.1",
+        "mathjs": "^7.0.0"
+    }
 }

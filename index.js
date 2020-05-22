@@ -3,8 +3,22 @@ const math = require("mathjs");
 
 const l = console.log;
 
-const K = 5,
-  max_iters = 10;
+let K = 5;
+let max_iters = 10;
+let imagePath = "insta.png";
+let compressedImagePath = "compressed_insta.png";
+
+process.argv.forEach(argument => {
+  if (argument.includes("--K=")) {
+    K = Number(argument.split("=")[1]) || K;
+  } else if (argument.includes("--max_iter=")) {
+    max_iters = Number(argument.split("=")[1]) || max_iters;
+  } else if (argument.includes("--imagePath=")) {
+    imagePath = argument.split("=")[1] || imagePath;
+  } else if (argument.includes("--comImagePath=")) {
+    compressedImagePath = argument.split("=")[1] || compressedImagePath;
+  }
+});
 
 const filterByIndex = index => val => val == index;
 
@@ -144,18 +158,22 @@ function getPixelColors(image) {
 function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; //The maximum is exclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (max - min)) + min;
 }
 
-Jimp.read("new_insta.png")
-  .then(image => {
-    let X = getPixelColors(image);
-    let initial_centroids = initCentroids(X, K);
-    let [centroids, idx] = runkMeans(X, initial_centroids, max_iters, K);
-    idx = findClosestCentroids(X, centroids, K);
-    newX = mapPixelsToCentroids(X, centroids, idx);
-    createCompressedImage(newX, image, "compressedInsta.png");
-  })
-  .catch(err => {
-    l(err);
-  });
+function init() {
+  Jimp.read(imagePath)
+    .then(image => {
+      let X = getPixelColors(image);
+      let initial_centroids = initCentroids(X, K);
+      let [centroids, idx] = runkMeans(X, initial_centroids, max_iters, K);
+      idx = findClosestCentroids(X, centroids, K);
+      newX = mapPixelsToCentroids(X, centroids, idx);
+      createCompressedImage(newX, image, compressedImagePath);
+    })
+    .catch(err => {
+      l(err);
+    });
+}
+
+init();
