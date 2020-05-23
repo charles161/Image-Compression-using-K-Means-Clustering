@@ -27,7 +27,7 @@ node index.js --K=5 --max_iter=10 --imagePath=./insta.png --comImagePath=./compr
 
 **In Development**
 
-## Uncompressed Image
+## Original Image
 
 ![insta.png](/insta.png "insta.png")
 
