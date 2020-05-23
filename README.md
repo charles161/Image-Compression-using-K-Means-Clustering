@@ -26,3 +26,11 @@ node index.js --K=5 --max_iter=10 --imagePath=./insta.png --comImagePath=./compr
 ## Running the React JS Application (Standalone)
 
 **In Development**
+
+## Uncompressed Image
+
+![insta.png](/insta.png "insta.png")
+
+## Compressed Image
+
+![compressed_insta.png](/compressed_insta.png "compressed_insta.png")
