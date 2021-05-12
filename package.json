@@ -11,6 +11,6 @@
     "license": "ISC",
     "dependencies": {
         "jimp": "^0.12.1",
-        "mathjs": "^7.0.0"
+        "mathjs": "^7.5.1"
     }
 }
